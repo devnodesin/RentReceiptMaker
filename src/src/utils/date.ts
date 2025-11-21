@@ -64,7 +64,7 @@ export function formatDateRange(start: Date, end: Date): string {
 /**
  * Check if value is a valid date
  */
-export function isValidDate(date: any): boolean {
+export function isValidDate(date: unknown): boolean {
   return date instanceof Date && !isNaN(date.getTime());
 }
 

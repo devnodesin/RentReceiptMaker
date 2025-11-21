@@ -114,16 +114,11 @@ export function useDatabase() {
         .exec();
 
       // Find the highest number
-      let maxNumber = 0;
-      receipts.forEach((receipt) => {
+      const numbers = receipts.map((receipt) => {
         const match = receipt.receiptNumber.match(/-(\d+)$/);
-        if (match && match[1]) {
-          const num = parseInt(match[1], 10);
-          if (num > maxNumber) {
-            maxNumber = num;
-          }
-        }
+        return match && match[1] ? parseInt(match[1], 10) : 0;
       });
+      const maxNumber = Math.max(0, ...numbers);
 
       // Generate next number with zero padding
       const nextNumber = maxNumber + 1;

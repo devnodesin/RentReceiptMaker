@@ -13,7 +13,7 @@ export function isValidPAN(pan: string): boolean {
 /**
  * Check if value is a valid number
  */
-export function isValidNumber(value: any): boolean {
+export function isValidNumber(value: unknown): boolean {
   return typeof value === 'number' && !isNaN(value) && isFinite(value);
 }
 
