@@ -21,6 +21,29 @@ interface CanvasConfig {
 }
 
 /**
+ * Color constants for receipt styling
+ */
+const COLORS = {
+  HEADER_GRADIENT_START: '#667eea',
+  HEADER_GRADIENT_END: '#764ba2',
+  PAID_STAMP: '#DC2626',
+} as const;
+
+/**
+ * Stamp configuration constants
+ */
+const STAMP_CONFIG = {
+  X_OFFSET: 250,
+  Y_OFFSET: 100,
+  WIDTH: 240,
+  HEIGHT: 100,
+  CORNER_RADIUS: 10,
+  BORDER_WIDTH: 8,
+  ROTATION: -0.3, // ~17 degrees
+  FONT_SIZE: 56,
+} as const;
+
+/**
  * Default A4 proportions in pixels (at 2x resolution)
  */
 const DEFAULT_CONFIG: CanvasConfig = {
@@ -162,15 +185,24 @@ export function useReceiptCanvas() {
     // Draw white background
     ctx.fillStyle = '#FFFFFF';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#000000';
+
+    // Draw colorful header background
+    const gradient = ctx.createLinearGradient(0, 0, canvas.width, padding * 2);
+    gradient.addColorStop(0, COLORS.HEADER_GRADIENT_START);
+    gradient.addColorStop(1, COLORS.HEADER_GRADIENT_END);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, padding * 2);
 
     // Title: RENT RECEIPT
+    ctx.fillStyle = '#FFFFFF';
     drawText(ctx, 'RENT RECEIPT', canvas.width / 2, currentY, {
       fontSize: fontSize.title,
       fontWeight: 'bold',
       align: 'center',
     });
     currentY += fontSize.title * 2;
+    
+    ctx.fillStyle = '#000000';
 
     // Receipt Number (right-aligned)
     drawText(ctx, `Receipt No: ${receiptNumber}`, canvas.width - padding, currentY, {
@@ -352,6 +384,45 @@ export function useReceiptCanvas() {
         align: 'left',
       });
     }
+
+    // Draw "PAID" stamp (rotated, red, prominent)
+    ctx.save();
+    const stampX = canvas.width - STAMP_CONFIG.X_OFFSET;
+    const stampY = canvas.height / 2 - STAMP_CONFIG.Y_OFFSET;
+    
+    // Rotate canvas for stamp
+    ctx.translate(stampX, stampY);
+    ctx.rotate(STAMP_CONFIG.ROTATION);
+    
+    // Draw stamp border (red rounded rectangle)
+    ctx.strokeStyle = COLORS.PAID_STAMP;
+    ctx.lineWidth = STAMP_CONFIG.BORDER_WIDTH;
+    ctx.setLineDash([]);
+    const stampWidth = STAMP_CONFIG.WIDTH;
+    const stampHeight = STAMP_CONFIG.HEIGHT;
+    const cornerRadius = STAMP_CONFIG.CORNER_RADIUS;
+    
+    ctx.beginPath();
+    ctx.moveTo(-stampWidth/2 + cornerRadius, -stampHeight/2);
+    ctx.lineTo(stampWidth/2 - cornerRadius, -stampHeight/2);
+    ctx.arcTo(stampWidth/2, -stampHeight/2, stampWidth/2, -stampHeight/2 + cornerRadius, cornerRadius);
+    ctx.lineTo(stampWidth/2, stampHeight/2 - cornerRadius);
+    ctx.arcTo(stampWidth/2, stampHeight/2, stampWidth/2 - cornerRadius, stampHeight/2, cornerRadius);
+    ctx.lineTo(-stampWidth/2 + cornerRadius, stampHeight/2);
+    ctx.arcTo(-stampWidth/2, stampHeight/2, -stampWidth/2, stampHeight/2 - cornerRadius, cornerRadius);
+    ctx.lineTo(-stampWidth/2, -stampHeight/2 + cornerRadius);
+    ctx.arcTo(-stampWidth/2, -stampHeight/2, -stampWidth/2 + cornerRadius, -stampHeight/2, cornerRadius);
+    ctx.closePath();
+    ctx.stroke();
+    
+    // Draw "PAID" text
+    ctx.fillStyle = COLORS.PAID_STAMP;
+    ctx.font = `bold ${STAMP_CONFIG.FONT_SIZE}px Arial, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('PAID', 0, 0);
+    
+    ctx.restore();
   }
 
   return {
