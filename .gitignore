@@ -85,3 +85,5 @@ typings/
 # Vite build output
 dist
 .vite/
+
+temp/
