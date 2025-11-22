@@ -4,7 +4,8 @@
       type="button"
       @click="handleDownload"
       :disabled="!canDownload || isDownloading"
-      class="btn btn-success btn-lg w-100 w-sm-auto px-4 py-2 fw-semibold shadow btn-hover-lift"
+      class="btn btn-success btn-lg px-4 py-2 fw-semibold shadow btn-hover-lift"
+      style="width: 100%; min-width: auto;"
     >
       {{ isDownloading ? 'Downloading...' : '📥 Download PNG' }}
     </button>
@@ -12,7 +13,8 @@
       type="button"
       @click="handleCopy"
       :disabled="!canDownload"
-      class="btn btn-primary btn-lg w-100 w-sm-auto px-4 py-2 fw-semibold shadow btn-hover-lift"
+      class="btn btn-primary btn-lg px-4 py-2 fw-semibold shadow btn-hover-lift"
+      style="width: 100%; min-width: auto;"
     >
       📋 Copy Image
     </button>
@@ -61,7 +63,7 @@ function handleCopy() {
 }
 
 @media (min-width: 576px) {
-  .w-sm-auto {
+  .btn {
     width: auto !important;
   }
 }

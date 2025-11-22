@@ -224,7 +224,8 @@
           v-if="!hasGenerated"
           type="submit"
           :disabled="!isFormValid"
-          class="btn btn-warning btn-lg w-100 w-sm-auto px-4 py-2 fw-semibold shadow form-btn-hover"
+          class="btn btn-warning btn-lg px-4 py-2 fw-semibold shadow form-btn-hover"
+          style="width: 100%; min-width: auto;"
         >
           Preview Receipt
         </button>
@@ -234,7 +235,8 @@
           type="button"
           @click="handleClear"
           :disabled="!hasData"
-          class="btn btn-secondary btn-lg w-100 w-sm-auto px-4 py-2 fw-semibold"
+          class="btn btn-secondary btn-lg px-4 py-2 fw-semibold"
+          style="width: 100%; min-width: auto;"
         >
           New Receipt
         </button>
@@ -319,7 +321,7 @@ function handleGenerate() {
 }
 
 @media (min-width: 576px) {
-  .w-sm-auto {
+  .btn {
     width: auto !important;
   }
 }
