@@ -123,12 +123,28 @@ export function useLocalStorage() {
   }
 
   /**
+   * Generate a simple UUID v4
+   * Fallback for environments without crypto.randomUUID()
+   */
+  function generateUUID(): string {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback UUID v4 generation
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
+
+  /**
    * Save a completed receipt
    */
   function saveReceipt(data: Omit<StoredReceiptData, 'id' | 'createdAt' | 'receiptNumber'>): StoredReceiptData {
     try {
       const receiptNumber = generateReceiptNumber();
-      const id = crypto.randomUUID();
+      const id = generateUUID();
       
       const receiptData: StoredReceiptData = {
         id,
@@ -205,9 +221,20 @@ export function useLocalStorage() {
     try {
       localStorage.removeItem(CURRENT_DRAFT_KEY);
       localStorage.removeItem(RECEIPTS_KEY);
-      // Also clear all year counters
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith(RECEIPT_COUNTER_KEY)) {
+      
+      // Clear current year counter (most common case)
+      const currentYear = new Date().getFullYear();
+      localStorage.removeItem(`${RECEIPT_COUNTER_KEY}_${currentYear}`);
+      
+      // Clear other year counters if they exist
+      // Only check keys that match our pattern to avoid iterating all storage
+      const keysToCheck = [
+        `${RECEIPT_COUNTER_KEY}_${currentYear - 1}`,
+        `${RECEIPT_COUNTER_KEY}_${currentYear + 1}`,
+      ];
+      
+      keysToCheck.forEach(key => {
+        if (localStorage.getItem(key) !== null) {
           localStorage.removeItem(key);
         }
       });

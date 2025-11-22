@@ -1,6 +1,6 @@
 /**
- * Pinia store for receipt form state
- * Now uses localStorage for persistence instead of RxDB
+ * Pinia store for receipt form state.
+ * Now uses localStorage for persistence instead of RxDB.
  */
 
 import { defineStore } from 'pinia';
